@@ -93,8 +93,9 @@ lib/
 
 ## 📸 Preview
 
-> _App Screenshots / GIFs will go here_  
-(Placeholder for now)
+> **Light Mode** ![Light Mode](https://github.com/user-attachments/assets/4614b93f-5107-463d-aa24-c404b2b61293)
+
+
 
 ---
 
