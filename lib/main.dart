@@ -41,7 +41,6 @@ class HabitApp extends StatelessWidget {
               secondary: theme.isDark ? const Color(0xFFFFB74D) : const Color(0xFFFF9800),
             ),
             textTheme: GoogleFonts.interTextTheme(baseTheme.textTheme),
-            useMaterial3: true,
           );
           return MaterialApp(
             debugShowCheckedModeBanner: false,
@@ -88,14 +87,43 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
     _controller.forward();
 
-    // Navigate after 2.5 seconds
+    // Navigate after 2.5 seconds or when auth is initialized
+    _scheduleNavigation();
+  }
+
+  void _scheduleNavigation() {
     Future.delayed(const Duration(milliseconds: 2500), () {
-      final auth = context.read<AuthProvider>();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => auth.isLoggedIn ? const HomeScreen() : const LoginScreen()),
-      );
+      if (mounted) {
+        final auth = context.read<AuthProvider>();
+        if (auth.isInitialized) {
+          _navigateToAppropriateScreen();
+        } else {
+          // Wait for auth to be initialized
+          _waitForAuthInitialization();
+        }
+      }
     });
+  }
+
+  void _waitForAuthInitialization() {
+    // Listen to auth provider changes
+    final auth = context.read<AuthProvider>();
+    auth.addListener(() {
+      if (auth.isInitialized && mounted) {
+        _navigateToAppropriateScreen();
+      }
+    });
+  }
+
+  void _navigateToAppropriateScreen() {
+    if (!mounted) return;
+    
+    final auth = context.read<AuthProvider>();
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => auth.isLoggedIn ? const HomeScreen() : const LoginScreen()),
+      (route) => false,
+    );
   }
 
   @override
@@ -127,7 +155,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                     ),
                     child: const Icon(
                       Icons.check_circle_outline,

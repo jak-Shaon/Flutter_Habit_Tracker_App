@@ -41,11 +41,11 @@ class _LoginScreenState extends State<LoginScreen> {
               decoration: BoxDecoration(
                 color: theme.cardColor,
                 borderRadius: BorderRadius.circular(24),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.black26,
                     blurRadius: 12,
-                    offset: const Offset(0, 6),
+                    offset: Offset(0, 6),
                   ),
                 ],
               ),
@@ -128,9 +128,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               }
                             } else {
                               if (context.mounted) {
-                                Navigator.pushReplacement(
+                                Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(builder: (_) => const HomeScreen()),
+                                  (route) => false,
                                 );
                               }
                             }

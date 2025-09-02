@@ -46,7 +46,16 @@ class AuthService {
   }
 
   Future<void> logout() async {
-    await _auth.signOut();
+    try {
+      // Sign out from Firebase Auth
+      await _auth.signOut();
+      
+      // Clear any cached data if needed
+      // Note: Firebase Auth automatically clears the current user
+    } catch (e) {
+      // Re-throw the error to be handled by the provider
+      throw Exception('Failed to logout: $e');
+    }
   }
 
   Future<AppUser?> currentUser() async {

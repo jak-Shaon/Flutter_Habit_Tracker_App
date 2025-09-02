@@ -13,6 +13,7 @@ class AuthProvider with ChangeNotifier {
   bool _loading = false;
   String? _error;
   bool _remember = true;
+  bool _isInitialized = false;
 
   AuthProvider() {
     _bootstrap();
@@ -23,14 +24,21 @@ class AuthProvider with ChangeNotifier {
   bool get loading => _loading;
   String? get error => _error;
   bool get remember => _remember;
+  bool get isInitialized => _isInitialized;
 
   Future<void> _bootstrap() async {
-    final prefs = await SharedPreferences.getInstance();
-    _remember = prefs.getBool('remember') ?? true;
-    if (_auth.currentUser != null) {
-      _user = await _service.currentUser();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      _remember = prefs.getBool('remember') ?? true;
+      if (_auth.currentUser != null) {
+        _user = await _service.currentUser();
+      }
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isInitialized = true;
+      notifyListeners();
     }
-    notifyListeners();
   }
 
   Future<void> setRemember(bool v) async {
@@ -91,11 +99,21 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> logout() async {
-    await _service.logout();
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('isLoggedIn');
-    _user = null;
+    _loading = true;
     notifyListeners();
+    
+    try {
+      await _service.logout();
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('isLoggedIn');
+      _user = null;
+      _error = null;
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _loading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> updateProfile({

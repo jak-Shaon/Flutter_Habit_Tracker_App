@@ -189,9 +189,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           agreedToTerms: _agreed,
                         );
                         if (auth.error != null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(auth.error!)),
-                          );
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(auth.error!)),
+                            );
+                          }
                         } else {
                           if (context.mounted) {
                             Navigator.pushAndRemoveUntil(
