@@ -93,8 +93,11 @@ lib/
 
 ## 📸 Preview
 
-> _App Screenshots / GIFs will go here_  
-(Placeholder for now)
+> ![Light Mode](https://github.com/user-attachments/assets/4614b93f-5107-463d-aa24-c404b2b61293) <br>
+ ![Dark Mode](https://github.com/user-attachments/assets/fd7460fb-f954-452e-ab75-e35eb0c5b927)
+
+
+
 
 ---
 
@@ -112,8 +115,8 @@ lib/
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/habit-tracker.git
-   cd habit-tracker
+   git clone [https://github.com/jak-Shaon/Flutter_Habit_Tracker_App]
+   cd habit_tracker_app
    ```
 
 2. Install dependencies:
@@ -150,5 +153,5 @@ This project is licensed under the **MIT License**.
 
 ### 👨‍💻 Author
 Developed by **Jahidul Alam Khan Shaon**  
-📧 Contact: [your.email@example.com]  
-🔗 GitHub: [yourusername](https://github.com/yourusername)
+📧 Contact: [jahidshaon28@gmail.com]  
+🔗 GitHub: [jak-Shaon](https://github.com/jak-Shaon)
