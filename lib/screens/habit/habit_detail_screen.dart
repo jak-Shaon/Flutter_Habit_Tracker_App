@@ -14,25 +14,22 @@ class HabitDetailScreen extends StatefulWidget {
 }
 
 class _HabitDetailScreenState extends State<HabitDetailScreen> {
-  late Habit _habit;
-
-  @override
-  void initState() {
-    super.initState();
-    _habit = widget.habit;
-  }
-
   @override
   Widget build(BuildContext context) {
     final hp = context.watch<HabitProvider>();
-    final data = hp.last7Days(_habit);
+    // Get the current habit from the provider to ensure we have the latest data
+    final habit = hp.habits.firstWhere(
+      (h) => h.id == widget.habit.id,
+      orElse: () => widget.habit,
+    );
+    final data = hp.last7Days(habit);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Habit Details'),
         actions: [
           IconButton(
             onPressed: () async {
-              await hp.deleteHabit(_habit.id);
+              await hp.deleteHabit(habit.id);
               if (context.mounted) Navigator.pop(context);
             },
             icon: const Icon(Icons.delete_outline),
@@ -42,9 +39,9 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text(_habit.title, style: Theme.of(context).textTheme.headlineSmall),
+          Text(habit.title, style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 6),
-          Text("${_habit.category} • ${_habit.frequency}"),
+          Text("${habit.category} • ${habit.frequency}"),
           const SizedBox(height: 16),
           Card(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -61,18 +58,18 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          if ((_habit.notes ?? '').isNotEmpty)
+          if ((habit.notes ?? '').isNotEmpty)
             Card(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Text(_habit.notes!),
+                child: Text(habit.notes!),
               ),
             ),
           const SizedBox(height: 24),
           FilledButton.icon(
             onPressed: () async {
-              await hp.toggleToday(_habit);
+              await hp.toggleToday(habit);
             },
             icon: const Icon(Icons.check_circle_outline),
             label: const Text("Mark today's completion"),

@@ -30,7 +30,20 @@ class AuthProvider with ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       _remember = prefs.getBool('remember') ?? true;
-      if (_auth.currentUser != null) {
+      
+      // Check if user should be remembered from previous session
+      final wasLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+      
+      if (_remember && wasLoggedIn && _auth.currentUser != null) {
+        // Restore user session if remember me is enabled and user was logged in
+        _user = await _service.currentUser();
+      } else if (!_remember && _auth.currentUser != null) {
+        // If remember me is disabled, clear any existing session
+        await _service.logout();
+        await prefs.remove('isLoggedIn');
+        _user = null;
+      } else if (_auth.currentUser != null) {
+        // If user is currently logged in (active session), load user data
         _user = await _service.currentUser();
       }
     } catch (e) {
@@ -45,6 +58,13 @@ class AuthProvider with ChangeNotifier {
     _remember = v;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('remember', v);
+    
+    // If user disables remember me, just remove the persistent login flag
+    // Don't log them out immediately - they can continue their current session
+    if (!v) {
+      await prefs.remove('isLoggedIn');
+    }
+    
     notifyListeners();
   }
 
@@ -68,9 +88,13 @@ class AuthProvider with ChangeNotifier {
         otherDetails: otherDetails,
         agreedToTerms: agreedToTerms,
       );
+      final prefs = await SharedPreferences.getInstance();
       if (_remember) {
-        final prefs = await SharedPreferences.getInstance();
+        // Save login state for future app restarts
         await prefs.setBool('isLoggedIn', true);
+      } else {
+        // Don't save login state, user will need to login again after app restart
+        await prefs.remove('isLoggedIn');
       }
     } catch (e) {
       _error = e.toString();
@@ -86,9 +110,13 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
     try {
       _user = await _service.login(email, password);
+      final prefs = await SharedPreferences.getInstance();
       if (_remember) {
-        final prefs = await SharedPreferences.getInstance();
+        // Save login state for future app restarts
         await prefs.setBool('isLoggedIn', true);
+      } else {
+        // Don't save login state, user will need to login again after app restart
+        await prefs.remove('isLoggedIn');
       }
     } catch (e) {
       _error = e.toString();

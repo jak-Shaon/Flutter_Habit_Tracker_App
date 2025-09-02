@@ -10,7 +10,9 @@ class QuotesService {
   /// Fetch quotes from API or fallback
   Future<List<Quote>> fetchQuotes({int limit = 10}) async {
     try {
-      final uri = Uri.parse('https://api.quotable.io/quotes?limit=$limit');
+      // Add random page parameter to get different quotes
+      final page = (DateTime.now().millisecondsSinceEpoch % 100) + 1;
+      final uri = Uri.parse('https://api.quotable.io/quotes?limit=$limit&page=$page');
       final res = await http.get(uri).timeout(const Duration(seconds: 10));
 
       if (res.statusCode == 200) {
@@ -25,22 +27,33 @@ class QuotesService {
       print("Error fetching quotes: $e");
     }
 
-    // Fallback quotes (local static list)
-    return [
+    // Fallback quotes (local static list) - shuffle for variety
+    final fallbackQuotes = [
       Quote(id: '1', content: 'Stay positive, work hard, make it happen.', author: 'Unknown'),
       Quote(id: '2', content: 'Believe you can and you\'re halfway there.', author: 'Theodore Roosevelt'),
       Quote(id: '3', content: 'Do something today that your future self will thank you for.', author: 'Unknown'),
       Quote(id: '4', content: 'Success is not final, failure is not fatal: It is the courage to continue that counts.', author: 'Winston Churchill'),
-      Quote(id: '5', content: 'Don’t watch the clock; do what it does. Keep going.', author: 'Sam Levenson'),
+      Quote(id: '5', content: 'Don\'t watch the clock; do what it does. Keep going.', author: 'Sam Levenson'),
       Quote(id: '6', content: 'Great things never come from comfort zones.', author: 'Unknown'),
-      Quote(id: '7', content: 'Opportunities don’t happen, you create them.', author: 'Chris Grosser'),
+      Quote(id: '7', content: 'Opportunities don\'t happen, you create them.', author: 'Chris Grosser'),
       Quote(id: '8', content: 'Push yourself, because no one else is going to do it for you.', author: 'Unknown'),
       Quote(id: '9', content: 'Dream big and dare to fail.', author: 'Norman Vaughan'),
-      Quote(id: '10', content: 'Hard work beats talent when talent doesn’t work hard.', author: 'Tim Notke'),
-      Quote(id: '11', content: 'Don’t stop when you’re tired. Stop when you’re done.', author: 'Unknown'),
+      Quote(id: '10', content: 'Hard work beats talent when talent doesn\'t work hard.', author: 'Tim Notke'),
+      Quote(id: '11', content: 'Don\'t stop when you\'re tired. Stop when you\'re done.', author: 'Unknown'),
       Quote(id: '12', content: 'The secret of getting ahead is getting started.', author: 'Mark Twain'),
-      Quote(id: '13', content: 'Your limitation—it’s only your imagination.', author: 'Unknown')
+      Quote(id: '13', content: 'Your limitation—it\'s only your imagination.', author: 'Unknown'),
+      Quote(id: '14', content: 'The way to get started is to quit talking and begin doing.', author: 'Walt Disney'),
+      Quote(id: '15', content: 'Innovation distinguishes between a leader and a follower.', author: 'Steve Jobs'),
+      Quote(id: '16', content: 'Life is what happens to you while you\'re busy making other plans.', author: 'John Lennon'),
+      Quote(id: '17', content: 'The future belongs to those who believe in the beauty of their dreams.', author: 'Eleanor Roosevelt'),
+      Quote(id: '18', content: 'It is during our darkest moments that we must focus to see the light.', author: 'Aristotle'),
+      Quote(id: '19', content: 'The only way to do great work is to love what you do.', author: 'Steve Jobs'),
+      Quote(id: '20', content: 'If you really look closely, most overnight successes took a long time.', author: 'Steve Jobs'),
     ];
+    
+    // Shuffle the fallback quotes and return the requested limit
+    fallbackQuotes.shuffle();
+    return fallbackQuotes.take(limit).toList();
   }
 
   CollectionReference<Map<String, dynamic>> favQuotesRef(String uid) =>

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import 'habit/habit_list_screen.dart';
+import 'habit/habit_form_screen.dart';
 import 'quotes_screen.dart';
 import 'profile_screen.dart';
 import 'settings_screen.dart';
@@ -81,6 +82,14 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.all(8.0),
             child: _pages[_index],
           ),
+          floatingActionButton: _index == 0 ? FloatingActionButton.extended(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const HabitFormScreen()),
+            ),
+            icon: const Icon(Icons.add),
+            label: const Text('New Habit'),
+          ) : null,
           bottomNavigationBar: NavigationBarTheme(
             data: NavigationBarThemeData(
               indicatorColor:

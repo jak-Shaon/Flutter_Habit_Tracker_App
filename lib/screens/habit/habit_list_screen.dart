@@ -12,19 +12,14 @@ class HabitListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final hp = context.watch<HabitProvider>();
 
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-      ),
-      body: RefreshIndicator(
+    return RefreshIndicator(
         onRefresh: () async {
           await Future.delayed(const Duration(milliseconds: 300));
         },
         child: Column(
           children: [
-            const SizedBox(height: 12),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
               child: Row(
                 children: [
                   Expanded(
@@ -40,10 +35,16 @@ class HabitListScreen extends StatelessWidget {
                       decoration: InputDecoration(
                         prefixIcon: const Icon(Icons.filter_alt),
                         labelText: 'Filter by category',
+                        labelStyle: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                        filled: true,
+                        fillColor: Theme.of(context).colorScheme.surface,
                       ),
                     ),
                   ),
@@ -83,15 +84,6 @@ class HabitListScreen extends StatelessWidget {
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const HabitFormScreen()),
-        ),
-        icon: const Icon(Icons.add),
-        label: const Text('New Habit'),
-      ),
-    );
+      );
   }
 }
